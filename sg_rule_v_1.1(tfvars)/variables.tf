@@ -12,18 +12,8 @@ variable "ssh_port" {
   type = string
 }
 
-variable "egress_port" {
-  description = "incoming port"
-  type        = number
-}
-
 variable "ingress_protocol" {
   description = "intbound network"
-  type        = string
-}
-
-variable "egress_protocol" {
-  description = "outbound network"
   type        = string
 }
 
@@ -33,11 +23,6 @@ variable "cidr_block" {
 }
 
 variable "in_traffic_type" {
-  description = "ingress type"
-  type        = string
-}
-
-variable "out_traffic_type" {
   description = "ingress type"
   type        = string
 }

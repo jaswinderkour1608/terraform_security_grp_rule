@@ -1,9 +1,9 @@
-# Version 1.5 of security group rule template is build with for_each meta-argument
-# and locals where we described the items for our rules. The same was used for egress
-# rule, for_each will loop and grabs the item values from a given list and terraform
-# creates the two rules ssh and http ingress and egress.
+# Version 1.5 of security group rule template is build with "for_each" meta-argument
+# and locals.tf is where we described the items for our rules. Using "for_each" will
+# loops and grabs the item values from a given list and terraform creates the two 
+# rules ssh and http ingress web_sg. Here we don't use variables.tf as well as dev.tf
+# all needed item descriptions are in locals.tf
 
-# Webserver security group
 resource "aws_security_group" "web_sg" {
   name        = "${var.env}_web_sg"
   description = "Allow inbound traffic"
@@ -27,11 +27,10 @@ resource "aws_security_group_rule" "web_ingress" {
 }
 
 resource "aws_security_group_rule" "egress" {
-  for_each = local.egress_rule
-  type              = each.value.type
-  from_port         = each.value.from_port
-  to_port           = each.value.to_port
-  protocol          = each.value.protocol
-  cidr_blocks       = [each.value.cidr_block]
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.web_sg.id
 }

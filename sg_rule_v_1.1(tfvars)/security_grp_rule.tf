@@ -1,9 +1,7 @@
 # This security group rule is the simple version of configuring your security group
-# rule resource block, using variables and tfvars/dev.tf file. Using variables makes
-# your template reusable, where all the given variable values can be changed in just
-# in tfvars/dev.tf file.
+# rule using variables.tf and tfvars/dev.tf file. Variables makes this template
+# reusable, where all the given variable values can be changed in tfvars/dev.tf file.
 
-# Webserver  security group
 resource "aws_security_group" "web_sg" {
   name        = "${var.env}_web_sg"
   description = "Allow inbound traffic"
@@ -35,10 +33,10 @@ resource "aws_security_group_rule" "ssh_ingress" {
 }
 
 resource "aws_security_group_rule" "egress" {
-  type              = var.out_traffic_type
-  from_port         = var.egress_port
-  to_port           = var.egress_port
-  protocol          = var.egress_protocol
-  cidr_blocks       = [var.cidr_block]
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.web_sg.id
 }

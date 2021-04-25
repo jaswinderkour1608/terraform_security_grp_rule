@@ -1,10 +1,9 @@
-# This example of security group rule is very similar to previous v 1.3, the only
+# This example of security group rule is very similar to previous v_1.3, the only
 # difference is we used list(objects) instead of list(tuple). We build the variables
-# file little different as well, but the same function "length" and count meta-
-# argument with count.index expression were used. Ant we can provision 2 ingress rules
-# (ssh and http) and egress rule.
+# file little different as well, but the same function "length" and "count" meta-
+# argument with "count.index" expression were used. Ant we can provision 2 ingress
+# (ssh and http) rules.
 
-# Webserver security group
 resource "aws_security_group" "web_sg" {
   name        = "${var.env}_web_sg"
   description = "Allow inbound traffic"
@@ -29,11 +28,10 @@ resource "aws_security_group_rule" "ingress_rules" {
 }
 
 resource "aws_security_group_rule" "egress" {
-  count             = length(var.sg_egress_rule)
-  type              = var.sg_egress_rule[count.index].type
-  from_port         = var.sg_egress_rule[count.index].from_port
-  to_port           = var.sg_egress_rule[count.index].to_port
-  protocol          = var.sg_egress_rule[count.index].protocol
-  cidr_blocks       = [var.sg_egress_rule[count.index].cidr_blocks]
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.web_sg.id
 }

@@ -1,10 +1,10 @@
 # In this example of sg_rule we used "count" meta-argument with "count.index" expression
-# and "length" functions, where we were able to provision 2 ingress rules (ssh and http)
-# and egress rule. The reason for putting an extra [] signs for cidr blocks is because 
-# it's a list, which requires to be inside of the []. Another thing to mention you can 
+# with "length" function, where we were able to provision 2 ingress rules (ssh and http).
+# The reason for putting an extra [] signs for cidr blocks, is because it's a list of
+# cidr blocks, which requires to be inside of the []. Another thing to mention you can 
 # either keep the list inside of the variables.tf or dev.tf, either way it will work.
+# In variables.tf we used "tuple" wrapped in "list" and desciription of the types of the items.
 
-# Webserver security group
 resource "aws_security_group" "web_sg" {
   name        = "${var.env}_web_sg"
   description = "Allow inbound traffic"
@@ -29,11 +29,10 @@ resource "aws_security_group_rule" "ingress_rules" {
 }
 
 resource "aws_security_group_rule" "egress" {
-  count             = length(var.sg_egress_rule)
-  from_port         = var.sg_egress_rule[count.index][0]
-  to_port           = var.sg_egress_rule[count.index][1]
-  protocol          = var.sg_egress_rule[count.index][2]
-  cidr_blocks       = [var.sg_egress_rule[count.index][3]]
-  type              = var.sg_egress_rule[count.index][4]
+  type              = "egress"
+  from_port         = 0
+  to_port           = 0
+  protocol          = "-1"
+  cidr_blocks       = ["0.0.0.0/0"]
   security_group_id = aws_security_group.web_sg.id
 }

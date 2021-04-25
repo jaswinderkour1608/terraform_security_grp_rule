@@ -16,16 +16,6 @@ variable "sg_ingress_rules" {
   }))
 }
 
-variable "sg_egress_rule" {
-  type = list(object({
-    type        = string
-    from_port   = number
-    to_port     = number
-    protocol    = string
-    cidr_blocks = string
-  }))
-}
-
 # Tags variables
 variable "env" {
   type        = string

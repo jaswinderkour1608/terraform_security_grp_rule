@@ -18,17 +18,7 @@ sg_ingress_rules = [
           cidr_blocks  = "0.0.0.0/0"
           description = "http_ingress"
         },
-    ]
-
-sg_egress_rule = [
-        {
-          type = "egress"
-          from_port   = 0
-          to_port     = 0
-          protocol    = "-1"
-          cidr_blocks  = "0.0.0.0/0"
-        },    
-  ]   
+    ]   
 
 # Tags variables
 env          = "dev"
