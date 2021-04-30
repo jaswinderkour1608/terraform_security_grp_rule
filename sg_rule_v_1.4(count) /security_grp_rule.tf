@@ -1,9 +1,3 @@
-# This example of security group rule is very similar to previous v_1.3, the only
-# difference is we used list(objects) instead of list(tuple). We build the variables
-# file little different as well, but the same function "length" and "count" meta-
-# argument with "count.index" expression were used. Ant we can provision 2 ingress
-# (ssh and http) rules.
-
 resource "aws_security_group" "web_sg" {
   name        = "${var.env}_web_sg"
   description = "Allow inbound traffic"

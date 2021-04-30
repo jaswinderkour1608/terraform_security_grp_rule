@@ -1,4 +1,3 @@
-# Webserver  security group rule
 resource "aws_security_group" "web_sg" {
   name        = "web_sg"
   description = "Allow inbound traffic"

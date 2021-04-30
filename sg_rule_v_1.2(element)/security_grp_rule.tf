@@ -1,8 +1,3 @@
-# In this version of 1.2 security group rule template, "element" and "length" functions 
-# were used with "count" meta-argument "count.index" expression. Here we created with 
-# one security group rule resource block 2 rules (22, 80) and for tags, we used locals 
-# in order to avoid repeating the same tags.
-
 resource "aws_security_group" "web_sg" {
   name        = "${var.env}_web_sg"
   description = "Allow inbound traffic"
