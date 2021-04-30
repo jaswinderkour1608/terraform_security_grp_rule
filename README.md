@@ -1,4 +1,4 @@
-## Terraform with Security group rule
+## Security group rule with Terraform
 
 This repository contains versions of security group rules, multiple options of how you can write your configuration files.
 
@@ -13,8 +13,7 @@ This Security group rule version is the simplest one, using ```variables.tf``` f
 #### Tags with locals.tf
 
 Tags comparison with/without locals.tf file. When you use the same environment and project name , instead of repeating it over and over again, you can use locals.tf where you describe all the common tags, and merge it to another tags in the resource block.
-
-Content of variables.tf ```tags part```.
+Content of variables.tf ```tags part```,
 ```
 # Tags variables
 
@@ -28,16 +27,13 @@ variable "project_name" {
   description = "name of the project"
 }
 ```
-
 tfvars/dev.tf tags
 ```
-
 # Tags variables
 
 env          = "dev"
 project_name = "application"
 ```
-
 How tags looked with variables, before we added locals.tf
 ```
 tags = {
@@ -46,7 +42,6 @@ tags = {
   Project     = var.project_name
 }
 ```
-
 Defining the ```common_tags``` in ```locals.tf``` that we are passing in our resource blocks.
 ```
 locals {
@@ -70,21 +65,17 @@ tags = merge(
 
 In this version of 1.2 Security Group rule, we used ```count``` meta-argument with ```element```, ```index``` and ```length``` functions. Our code does the same as before creates security group rules ingress ssh and http, and egress open to the world. But the trick here is that with one security group rule resource block we are able to provision 2 rules (22, 80) and egress (usually we leave egress rule hard coded). We used ```count``` to avoid repeating resource blocks and functions above helped us with that job. For tags we used locals, it helped us not to repeate the same tags over and over again. Now lets go over the code, first we defined the ports in ```variables.tf```, and we used ```list of strings``` for passing the values.
 ```
-...
 # Security group rule variables
 
 variable "web_sg_tcp_ports" {
   type = list(string) 
 }
-...
 ```
 Values for the given variables are passed in ```tfvars/dev.tf```
 ```
-...
 # Security group variables
 
 web_sg_tcp_ports = ["22", "80"]
-...
 ```
 And ```security_group_rule.tf``` resource block ingress part looks like this,
 ```
@@ -105,7 +96,6 @@ First we have to give where the needed values for the attributes are given and w
 In this example of security group rule  we used ```count``` meta-argument with ```index``` and ```length``` functions, we are provisioning two ingress rules (ssh and http) and egress rule (hard coded). 
 ```variables.tf```, we commented out default values, because we passed the values it ```dev.tf```. 
 ```
-...
 # Security group rule variables
 
 variable "sg_ingress_rules" {
@@ -115,22 +105,16 @@ variable "sg_ingress_rules" {
   #  [80, 80, "tcp", "0.0.0.0/0", "http_ingress", "ingress"],
   #] 
 }
-...
 ```
-
 tfvars/dev.tf, why here two [] brackets? well it's tuple wrapped inside of the list, both have their values inside of the [] brackets. I wanted to mention that you can either keep the list(tuple) inside of the ```variables.tf``` as a ```default``` value or pass it in ```tfvars/dev.tf``` with ```sg_ingress_rules```, either way it will work.
 ```
-...
 sg_ingress_rules = [
         [22, 22, "tcp", "0.0.0.0/0", "ssh_ingress", "ingress"],
         [80, 80, "tcp", "0.0.0.0/0", "http_ingress", "ingress"],
-    ]
-...    
+    ]  
 ```
-
 Now lets see sg_rule.tf ingress rule part
 ```
-...
 resource "aws_security_group_rule" "ingress_rules" {
   count             = length(var.sg_ingress_rules)
   from_port         = var.sg_ingress_rules[count.index][0]
@@ -141,7 +125,6 @@ resource "aws_security_group_rule" "ingress_rules" {
   type              = var.sg_ingress_rules[count.index][5]
   security_group_id = aws_security_group.web_sg.id
 }
-...
 ```
 The reason for putting an extra [] brackets for cidr blocks is because it's a list of multiple cidr blocks. As it shown above ```count.index``` will get the values for every attribute  from the  ```sg_ingress_rules``` variable. And given list is in tuple of values, make sure to put in order the values, as count is grabbing those values by index numbers starting from zero.
 
@@ -150,7 +133,6 @@ The reason for putting an extra [] brackets for cidr blocks is because it's a li
 This example of security group rule is very similar to previous version 1.3, the only
 difference is we used list(objects) instead of list(tuple) where we defined our resources vertically for clarity. We build the variable file little different as well, but the same functions ```length``` and ```index``` with  ```count``` meta-argument were used. One resource block creates two ingress (ssh and http) rules. We can check it out visually ```variables.tf``` file,
 ```
-...
 # Security group rule variables
 
 variable "sg_ingress_rules" {
@@ -163,9 +145,7 @@ variable "sg_ingress_rules" {
     description = string
   }))
 }
-...
 ```
-
 ```tfvars/dev.tf``` values,
 ```
 sg_ingress_rules = [ 
@@ -189,7 +169,6 @@ sg_ingress_rules = [
 ```
 ```security_grp_rule.tf``` ingress rules part,
 ```
-...
 resource "aws_security_group_rule" "ingress_rules" {
   count             = length(var.sg_ingress_rules)
   type              = var.sg_ingress_rules[count.index].type
@@ -200,11 +179,30 @@ resource "aws_security_group_rule" "ingress_rules" {
   description       = var.sg_ingress_rules[count.index].description
   security_group_id = aws_security_group.web_sg.id
 }
-...
 ```
-
 Another difference from the version 1.3 is that instead of passing numeric index, we passed attribute names. 
 
-6. Version security group rule 1.6
+6. Version 1.5 of Security Group Rule (for_each/locals/value)
 
-Version 1.5 of security group rule template is build with "for_each" meta-argument and locals.tf is where we described the items for our rules. Using "for_each" will loops and grabs the item values from a given list and terraform creates the two rules ssh and http ingress web_sg. Here we don't use variables.tf as well as dev.tf all needed item descriptions are in locals.tf
+Version 1.5 of security group rule template is build with ```for_each``` meta-argument, ```locals``` and ```value``` function. Here we don't define our values in variables and don't pass values for attributes in tfvars/dev.tf file, for that we are using locals.tf it is where we have the values for our rules. ```for_each``` will itirates and grabs the values, from a given list in locals.tf and ```Terraform``` creates the two rules ssh and http ingress for web_sg. It's pretty simple when we look at that visually,
+```
+locals {
+  ingress_rules = {
+    1 = { from_port = 22, to_port = 22, protocol = "tcp", cidr_block = "0.0.0.0/0", description = "ssh_ingress", type = "ingress" },
+    2 = { from_port = 80, to_port = 80, protocol = "tcp", cidr_block = "0.0.0.0/0", description = "http_ingress", type = "ingress" },
+  }
+} 
+```
+security_grp_rule.tf
+```
+resource "aws_security_group_rule" "web_ingress" {
+  for_each          = local.ingress_rules
+  type              = each.value.type
+  protocol          = each.value.protocol
+  from_port         = each.value.from_port
+  to_port           = each.value.to_port
+  cidr_blocks       = [each.value.cidr_block]
+  security_group_id = aws_security_group.web_sg.id
+}
+```
+I found this version is more simple to understand and use, without variables but we still have some values in there that we defined in root module.
