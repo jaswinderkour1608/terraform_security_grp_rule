@@ -1,11 +1,12 @@
 ## Terraform with Security group rule
 
-This repository terraform_security_group_rule contains versions of 
+This repository contains versions of security group rules, multiple options of how you can write your configuration files.
 
-1. Version security group rule 1.0
+1. Version 1.0 Security Group Rule (hard coded) 
 
+The first security group rule version is hard coded, which is not recommended by Terraform, it makes our code not reusable. But it is good to have for it for comparing with other versions. It is always good pracitice to start with hard coding, because this way you will understand the basics of automation and IaaC. Security group rule has two ports ingress open 22 and 80 and in Terraform you have to specify egress rule, which is open to 0.0.0.0/0.
 
-2. Version security group rule 1.1
+2. Version 1.1 Security Group Rule (with variables)
 
 This security group rule is the simple version of configuring your security group
 rule using variables.tf and tfvars/dev.tf file. Variables makes this template
