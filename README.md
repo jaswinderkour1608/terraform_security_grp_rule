@@ -206,7 +206,7 @@ resource "aws_security_group_rule" "web_ingress" {
 }
 ```
 
-### 7. Version 1.5 of Security Group Rule (for_each/variables/value/map(object))
+### 7. Version 1.6 of Security Group Rule (for_each/variables/value/map(object))
 
 Version 1.6 of security group rule template is build with `for_each` meta-argument
 and `map` combined with `object` expressions. Attributes for rules are defined
