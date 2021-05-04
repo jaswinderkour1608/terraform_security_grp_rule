@@ -11,7 +11,7 @@ resource "aws_security_group" "web_sg" {
 }
 
 resource "aws_security_group_rule" "web_ingress" {
-  for_each          = local.ingress_rules
+  for_each          = var.sg_ingress_rules
   type              = each.value.type
   protocol          = each.value.protocol
   from_port         = each.value.from_port
