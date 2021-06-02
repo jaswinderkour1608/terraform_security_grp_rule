@@ -9,12 +9,12 @@ variable "web_sg_tcp_ports" {
 }
 
 variable "ingress_protocol" {
-  description = "intbound network"
+  description = "inbound network"
   type        = string
 }
 
 variable "cidr_block" {
-  description = "ingress/egress cidr block"
+  description = "egress cidr block"
   type        = string
 }
 
